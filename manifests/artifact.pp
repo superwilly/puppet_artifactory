@@ -9,6 +9,7 @@
 # [*classifier*] : The classifier (no classifier by default)
 # [*repository*] : The repository such as 'public', 'central'... (defaults to 'releases' or 'snapshots' depending on the version specified in gav
 # [*output*] : The output file (defaults to the resource name)
+# [*owner*] : Owner of the output file (defaults to username of the puppet process)
 #
 # Actions:
 # If repository is set, its setting will be honoured.
@@ -50,6 +51,7 @@ define artifactory::artifact(
   $classifier = '',
   $repository = '',
   $output = $name,
+  $owner = $id,
   $timestamped = false)
 {
 
@@ -75,7 +77,7 @@ define artifactory::artifact(
     $timestampedRepo = "-t"
   }
 
-  $cmd = "/opt/artifactory-script/download-artifact-from-artifactory.sh -a ${gav} -e ${packaging} ${includeClass} -n ${artifactory::ARTIFACTORY_URL} ${includeRepo} ${timestampedRepo} -o ${output} ${args} -v"
+  $cmd = "/opt/artifactory-script/download-artifact-from-artifactory.sh -a ${gav} -e ${packaging} ${includeClass} -n ${artifactory::ARTIFACTORY_URL} ${includeRepo} ${timestampedRepo} -o ${output} -O ${owner} ${args}   -v"
 
   if $ensure == present {
     exec { "Download ${gav}-${classifier} to ${output}":

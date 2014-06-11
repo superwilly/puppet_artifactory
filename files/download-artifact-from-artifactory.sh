@@ -24,6 +24,7 @@ OPTIONS:
    -u    Username
    -p    Password
    -n    Artifactory Base URL
+   -O    Owner of the downloaded artifact
 
 EOF
 }
@@ -115,7 +116,7 @@ TIMESTAMPED_SNAPSHOT=0
 
 OUTPUT=
 
-while getopts "hvta:c:e:o:r:u:p:n:" OPTION
+while getopts "hvta:c:e:o:r:u:p:n:O:" OPTION
 do
     case $OPTION in
         h)
@@ -157,6 +158,9 @@ do
             ;;
         n)
             ARTIFACTORY_BASE=$OPTARG
+            ;;
+        O)
+            OWNER=$OPTARG
             ;;
         ?)
             echo "Illegal argument $OPTION=$OPTARG" >&2
@@ -239,3 +243,9 @@ fi
 
 echo "Fetching Artifact from $REQUEST_URL..." >&2
 curl -sS -f -L ${REQUEST_URL} ${OUT} ${AUTHENTICATION} ${CURL_VERBOSE} --location-trusted
+
+if [[ "$OWNER != $(whoami)" ]]
+then
+    echo "Changing owner of Artifact to ${OWNER} " >&2
+    chown ${OWNER} ${OUTPUT} 
+fi
